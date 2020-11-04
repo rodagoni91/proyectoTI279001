@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Usuarios
 Route::group(['prefix' => 'v1'],function(){
 	//RUTAS DE USUARIOS
+	Route::post('login', 'LoginController@login');
     Route::resource('usuarios','usuariosController');
     Route::resource('escuelas','escuelaController');
-});
+}); 
