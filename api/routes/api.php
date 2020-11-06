@@ -19,17 +19,9 @@ Route::group(['prefix' => 'v1'],function(){
     //Route::post('login', 'AuthController@login');
     Route::resource('usuarios','UsuarioController');
     Route::resource('escuelas','EscuelaController');
+    Route::resource('cursos','cursoController');
     Route::post('login', 'AuthController@login');
     Route::post('signup', 'AuthController@signup');
     Route::get('logout', 'AuthController@logout');
     Route::get('user', 'AuthController@user');
 }); 
-
-/*Route::group(['prefix' => 'auth'], function () {
-    
-});
-    Route::group(['middleware' => 'auth:api'], function() {
-        Route::get('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
-    });*/
-
