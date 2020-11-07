@@ -3,11 +3,11 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\User;
-use App\tiposUsuario;
+use App\Tarea;
 use Validator;
-use App\Curso;
+use App\DetalleTarea;
 use Illuminate\Support\Facades\Response;
-class CursoController extends Controller
+class DetalleTareaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +16,10 @@ class CursoController extends Controller
      */
     public function index()
     {
-        $coleccion = Curso::join('users','users.id','=','Curso.idProfesor')
-        ->join('TipoUsuario','TipoUsuario.idTipoUsuario','=','users.idTipoUsuario')
-        ->select('Curso.*','users.*','users.name as nombreProfesor','TipoUsuario.nombre as nombretipousuario')
+        $coleccion = DetalleTarea::join('Tarea','Tarea.idTarea','=','DetalleTarea.idTarea')
+        ->join('users','users.id','=','DetalleTarea.idAlumno')
+        ->join('Curso','Curso.idCurso','=','Tarea.idCurso')
+        ->select('DetalleTarea.*','Curso.NombreCurso','users.name as NombreAlumno')
         ->get();
         $response = Response::json($coleccion,200);
         return $response;
@@ -43,11 +44,8 @@ class CursoController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'idProfesor' => 'required|numeric',
-            'NombreCurso' => 'required|string',
-            'Hora' => 'required|string',
-            'Dias' => 'required|string',
-            'CodigoInscripcion' => 'required|string'
+            'idAlumno'=>'required|numeric',
+            'idTarea'=>'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -66,14 +64,13 @@ class CursoController extends Controller
             return $response;
         } 
 
-        $curso = new Curso;
-        $curso->idProfesor = filter_var($request->idProfesor,FILTER_SANITIZE_NUMBER_INT);
-        $curso->NombreCurso = filter_var($request->NombreCurso,FILTER_SANITIZE_STRING);
-        $curso->Hora = filter_var($request->Hora,FILTER_SANITIZE_STRING);
-        $curso->Dias = filter_var($request->Dias,FILTER_SANITIZE_STRING);
-        $curso->CodigoInscripcion = filter_var($request->CodigoInscripcion,FILTER_SANITIZE_STRING);
-        $curso->created_at = Carbon::now()->format('Y-m-d h:i:s');
-        $curso->save();
+
+        $detalle = new DetalleTarea;
+        $detalle->idAlumno =  filter_var($request->idAlumno,FILTER_SANITIZE_NUMBER_INT);
+        $detalle->idTarea =  filter_var($request->idTarea,FILTER_SANITIZE_NUMBER_INT);
+        $detalle->FechaEntregada = Carbon::now()->format('Y-m-d h:i:s');
+        $detalle->created_at = Carbon::now()->format('Y-m-d h:i:s');
+        $detalle->save();
 
         $response = Response::json([
             'res' => true
@@ -91,10 +88,11 @@ class CursoController extends Controller
      */
     public function show($id)
     {
-        $coleccion = Curso::join('users','users.id','=','Curso.idProfesor')
-        ->join('TipoUsuario','TipoUsuario.idTipoUsuario','=','users.idTipoUsuario')
-        ->select('Curso.*','users.name as nombreProfesor','TipoUsuario.nombre as nombretipousuario')
-        ->where('Curso.idCurso','=',$id)
+        $coleccion = DetalleTarea::join('Tarea','Tarea.idTarea','=','DetalleTarea.idTarea')
+        ->join('users','users.id','=','DetalleTarea.idAlumno')
+        ->join('Curso','Curso.idCurso','=','Tarea.idCurso')
+        ->select('DetalleTarea.*','Curso.NombreCurso','users.name as NombreAlumno')
+        ->where('DetalleTarea.idDetalleTarea','=', $id)
         ->first();
         $response = Response::json($coleccion,200);
         return $response;
@@ -120,13 +118,11 @@ class CursoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $curso = Curso::find($id);
+        $detalle = DetalleTarea::find($id);
+
         $validator = Validator::make($request->all(), [
-            'idProfesor' => 'required|numeric',
-            'NombreCurso' => 'required|string',
-            'Hora' => 'required|string',
-            'Dias' => 'required|string',
-            'CodigoInscripcion' => 'required|string'
+            'idAlumno'=>'required|numeric',
+            'idTarea'=>'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -145,14 +141,11 @@ class CursoController extends Controller
             return $response;
         } 
 
-        
-        $curso->idProfesor = filter_var($request->idProfesor,FILTER_SANITIZE_NUMBER_INT);
-        $curso->NombreCurso = filter_var($request->NombreCurso,FILTER_SANITIZE_STRING);
-        $curso->Hora = filter_var($request->Hora,FILTER_SANITIZE_STRING);
-        $curso->Dias = filter_var($request->Dias,FILTER_SANITIZE_STRING);
-        $curso->CodigoInscripcion = filter_var($request->CodigoInscripcion,FILTER_SANITIZE_STRING);
-        $curso->created_at = Carbon::now()->format('Y-m-d h:i:s');
-        $curso->save();
+        $detalle->idAlumno =  filter_var($request->idAlumno,FILTER_SANITIZE_NUMBER_INT);
+        $detalle->idTarea =  filter_var($request->idTarea,FILTER_SANITIZE_NUMBER_INT);
+        $detalle->FechaEntregada = Carbon::now()->format('Y-m-d h:i:s');
+        $detalle->created_at = Carbon::now()->format('Y-m-d h:i:s');
+        $detalle->save();
 
         $response = Response::json([
             'res' => true
@@ -169,10 +162,9 @@ class CursoController extends Controller
      */
     public function destroy($id)
     {
-        $curso = Curso::find($id);
-        $curso->delete();
-       
-
+        $tarea = DetalleTarea::find($id);
+        $tarea->delete();
+    
         $response = Response::json([
         'res' => true
         ], 201);

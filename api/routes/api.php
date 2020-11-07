@@ -16,10 +16,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::group(['prefix' => 'v1'],function(){
-    //Route::post('login', 'AuthController@login');
+
     Route::resource('usuarios','UsuarioController');
     Route::resource('escuelas','EscuelaController');
-    Route::resource('cursos','cursoController');
+    Route::resource('cursos','CursoController');
+    Route::resource('tareas','TareaController');
+    Route::resource('detalleTarea','DetalleTareaController');
     Route::post('login', 'AuthController@login');
     Route::post('signup', 'AuthController@signup');
     Route::get('logout', 'AuthController@logout');
