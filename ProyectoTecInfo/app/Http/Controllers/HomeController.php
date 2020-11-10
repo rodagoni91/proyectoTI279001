@@ -127,7 +127,7 @@ class HomeController extends Controller
             //$usuario->idTipoUsuario = filter_var($request->idTipoUsuario,FILTER_SANITIZE_NUMBER_INT);
             $usuario->name = filter_var($request->name, FILTER_SANITIZE_STRING);
             $usuario->email = filter_var($request->email,FILTER_SANITIZE_EMAIL);
-            $usuario->phone = filter_var($request->phone,FILTER_SANITIZE_STRING);
+            $usuario->phone = filter_var($request->Telefono,FILTER_SANITIZE_STRING);
             $usuario->updated_at = Carbon::now()->format('Y-m-d h:i:s');
             $usuario->save();
             Session::flash('alert-class', 'alert-success');

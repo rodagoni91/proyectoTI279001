@@ -11,7 +11,7 @@
 
       <div class="container">
 
-          <div class="row text-center">
+          <div class="row">
            <div class="col-md-6">
             </div>
             <div class="col-md-3">
@@ -29,7 +29,7 @@
                 <div class="toolbar">
                   <!--        Here you can write extra buttons/actions for the toolbar              -->
                 </div>
-                <table id="datatable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <table id="datatable" class="table table-striped table-bordered text-center" cellspacing="0" width="100%">
                   <thead>
                     <tr>
                       <th>Nombre</th>
