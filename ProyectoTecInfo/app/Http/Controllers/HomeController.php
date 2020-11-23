@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\TipoUsuario;
 use App\User;
 use App\Escuela;
+use App\Profesor;
 class HomeController extends Controller
 {
     /**
@@ -260,11 +261,14 @@ class HomeController extends Controller
      //Funciones de administracion de profesores
     public function admiProfesores(){
         if(Auth::user()->idTipoUsuario == 3){
-            $usuarios = User::join('TipoUsuario','TipoUsuario.idTipoUsuario','=','users.idTipoUsuario')
-            ->select('users.*','TipoUsuario.nombre as nombretipousuario')
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            $profesores = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->select('Profesor.*','users.*')
             ->where('users.idTipoUsuario','=',4)
+            ->where('Profesor.idEscuela','=',$escuela->idEscuela)
             ->get();
-            return view('admiProfesores')->with('usuarios',$usuarios);
+
+            return view('admiProfesores')->with('profesores',$profesores)->with('escuela',$escuela);
         }
         else{
             return redirect('/home');
@@ -277,8 +281,8 @@ class HomeController extends Controller
                 'name'=> 'required|string',
                 'phone' => 'required|string',
                 'email' => 'required|string|email|max:255|unique:users',
+                'Direccion' => 'required|string',
             ]);
-
             if ($validator->fails())
             {
                 Session::flash('alert-class', 'alert-danger');
@@ -293,6 +297,12 @@ class HomeController extends Controller
             $usuario->password = bcrypt("password");
             $usuario->created_at = Carbon::now()->format('Y-m-d h:i:s');
             $usuario->save();
+            $profesor = new Profesor;
+            $profesor->idUsuario = $usuario->id;
+            $profesor->idEscuela = $request->idEscuela;
+            $profesor->Direccion = filter_var($request->Direccion,FILTER_SANITIZE_STRING);
+            $profesor->Telefono = filter_var($request->Telefono,FILTER_SANITIZE_STRING); 
+            $profesor->save();
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Agregado Correctamente.');
             return redirect('/admiProfesores'); 
@@ -304,7 +314,10 @@ class HomeController extends Controller
 
     public function eliminarProfesor(Request $request){
         if(Auth::user()->idTipoUsuario == 3){
-            $usuario = User::find($request->idUsuario);
+            $profesor = Profesor::find($request->idProfesor);
+            $usuario = User::find($profesor->idUsuario);
+            $usuario->delete();
+            $profesor->delete();
             $usuario->delete();
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Eliminado Correctamente.');
@@ -315,10 +328,13 @@ class HomeController extends Controller
         }   
     }
 
-    public function vistaActualizarProfesor($id){
+    public function vistaActualizarProfesor($idProfesor){
         if(Auth::user()->idTipoUsuario == 3){
-            $usuario = User::find($id);
-            return view('actualizarProfesor')->with('usuario',$usuario);
+            $profesor = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->select('Profesor.*','users.*')
+            ->where('Profesor.idProfesor','=',$idProfesor)
+            ->first();
+            return view('actualizarProfesor')->with('profesor',$profesor);
         }
         else{
             return redirect('/home');
@@ -327,24 +343,31 @@ class HomeController extends Controller
 
     public function actualizarProfesor(Request $request){
         if(Auth::user()->idTipoUsuario == 3){
-            $usuario = User::find($request->idUsuario);
+            $profesor = Profesor::find($request->idProfesor);
+            $usuario = User::find($profesor->idUsuario);
+
             $validator = Validator::make($request->all(), [
                 'name'=> 'required|string',
+                'Telefono' => 'required|string',
+                'Direccion' => 'required|string',
             ]);
             if ($validator->fails())
             {
                 Session::flash('alert-class', 'alert-danger');
                 Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
-                return redirect('/actualizarProfesor/'.$request->idUsuario)->withInput()->withErrors($validator);
+                return redirect('/actualizarProfesor/'.$request->idProfesor)->withInput()->withErrors($validator);
             }
             
             $usuario->name = filter_var($request->name, FILTER_SANITIZE_STRING);
             $usuario->phone = filter_var($request->Telefono,FILTER_SANITIZE_STRING);
             $usuario->updated_at = Carbon::now()->format('Y-m-d h:i:s');
             $usuario->save();
+            $profesor->Direccion = filter_var($request->Direccion,FILTER_SANITIZE_STRING);
+            $profesor->Telefono = filter_var($request->Telefono,FILTER_SANITIZE_STRING); 
+            $profesor->save();
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Actualizado Correctamente.');
-            return redirect('/actualizarProfesor/'.$request->idUsuario); 
+            return redirect('/actualizarProfesor/'.$request->idProfesor); 
         }
         else{
             return redirect('/home');

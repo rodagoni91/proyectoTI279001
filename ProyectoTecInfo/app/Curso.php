@@ -3,13 +3,13 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-class Escuela extends Model
+class Curso extends Model
 {
     use Notifiable;
     use SoftDeletes;
-    protected $table = 'Escuela';
-	protected $primaryKey = 'idEscuela';
+    protected $table = 'Curso';
+	protected $primaryKey = 'idCurso';
     protected $fillable = [
-        'idUsuario','Direccion','Telefono','Director'
+        'idEscuela','idProfesor','NombreCurso'
     ];
 }

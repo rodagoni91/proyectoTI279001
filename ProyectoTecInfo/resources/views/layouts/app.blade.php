@@ -239,14 +239,13 @@
             <div class="row">
             <!-- Acerca De Nosotros-->
             <div class="col-md-12">
-                <h5>SHOOL ASSISTENT</h5>
-                <ul class="links-vertical">
-                <li>
-                    <a href="{{ url('/') }}#inicio" class="text-muted">
-                    Inicio
-                    </a>
-                </li>
                 
+                <ul class="links-vertical">
+                  <li>
+                      <a href="{{ url('/') }}#inicio" class="text-muted" style="color:white;">
+                      Inicio
+                      </a>
+                  </li>
                 </ul>
             </div>
             
@@ -256,20 +255,7 @@
       </div>
       <div class="col-md-4"></div>
       
-      <!--Copyright-->
-      <div class="col-md-4">
-      <div class="copyright">
-        Copyright ©
-        <script>
-          document.write(new Date().getFullYear())
-        </script>
-          Derechos Reservados.
-        <br>
-        <a style="text-decoration: underline;color:white !important;" href="https://guimea.com/"  target="_blank" > 
-            Powered By Nosotros
-          </a>
-      </div>
-      </div>
+      
     </div>
   </footer>
 

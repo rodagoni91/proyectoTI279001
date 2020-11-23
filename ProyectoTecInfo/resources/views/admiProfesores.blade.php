@@ -34,27 +34,27 @@
                     <tr>
                       <th>Nombre</th>
                       <th>Correo</th>
-                     
+                      <th>Direccion</th>
+                      <th>Telefono</th>
                       <th>Creado el</th>
-
                       <th class="disabled-sorting ">Acciones</th>
                     </tr>
                   </thead>
                   <tfoot>
-                  <th>Nombre</th>
+                      <th>Nombre</th>
                       <th>Correo</th>
-                     
+                      <th>Direccion</th>
+                      <th>Telefono</th>
                       <th>Creado el</th>
-
                       <th class="disabled-sorting">Acciones</th>
-
                   </tfoot>
                   <tbody>
-                  @foreach($usuarios as $user)
+                  @foreach($profesores as $user)
                     <tr>
                       <td>{{$user->name}}</td>
                       <td>{{$user->email}}</td>
-
+                      <td>{{$user->Direccion}}</td>
+                      <td>{{$user->Telefono}}</td>
                       <td>
                         @php
                             $date = Date::parse($user->created_at);
@@ -63,15 +63,15 @@
                       </td>
 
                       <td class="text-center">
-                           <a class="btn btn-round btn-warning btn-icon btn-sm" href="/actualizarProfesor/{{$user->id}}" ><i class="fas fa-edit"></i></a>
-                             <a href="#" class="btn btn-round btn-danger btn-icon btn-sm" data-toggle="modal" data-target="#exampleModal{{$user->id}}"><i class="fas fa-times"></i></a>
+                           <a class="btn btn-round btn-warning btn-icon btn-sm" href="/actualizarProfesor/{{$user->idProfesor}}" ><i class="fas fa-edit"></i></a>
+                             <a href="#" class="btn btn-round btn-danger btn-icon btn-sm" data-toggle="modal" data-target="#exampleModal{{$user->idProfesor}}"><i class="fas fa-times"></i></a>
 
 
-                                <div class="modal fade" id="exampleModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{$user->id}}" aria-hidden="true">
+                                <div class="modal fade" id="exampleModal{{$user->idProfesor}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{$user->idProfesor}}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel{{$user->id}}">Borrar usuario</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel{{$user->idProfesor}}">Borrar usuario</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -80,7 +80,7 @@
                                               {{csrf_field()}}
                                                 <div class="modal-body">
 
-                                                    <input type="hidden" name="idUsuario" value="{{$user->id}}">
+                                                    <input type="hidden" name="idProfesor" value="{{$user->idProfesor}}">
                                                     <p style="float:left;">
                                                     Estas seguro que quieres eliminar al profesor {{$user->name}}?<br><br><br><br>
                                                   </p>
@@ -128,6 +128,7 @@
         <form method="POST" action="/insertarProfesor">
             {{csrf_field()}}
             <input type="hidden" name="phone" value="555"> 
+            <input type="hidden" name="idEscuela" value="{{$escuela->idEscuela}}">
             <div class="form-group">
                 <label for="email">Nombre del Profesor:</label>
                 <input type="text" required="" value="{{old('name')}}" name="name" class="form-control">
@@ -153,6 +154,16 @@
                 @if($errors->has('Telefono'))
                 <span class="help-block text-danger">
                     {{ $errors->first('Telefono') }}
+                </span>
+                @endif
+            </div> 
+
+            <div class="form-group">
+                <label for="email">Direccion:</label>
+                <input type="text" required="" value="{{old('Direccion')}}" name="Direccion" class="form-control">
+                @if($errors->has('Direccion'))
+                <span class="help-block text-danger">
+                    {{ $errors->first('Direccion') }}
                 </span>
                 @endif
             </div>

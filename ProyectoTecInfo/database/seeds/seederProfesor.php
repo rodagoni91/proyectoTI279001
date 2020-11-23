@@ -4,7 +4,8 @@ use Faker\Factory as Faker;
 use Carbon\Carbon;
 use App\tipoUsuario;
 use App\User;
-class seederEscuela extends Seeder
+use App\Escuela;
+class seederProfesor extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,15 +15,17 @@ class seederEscuela extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        $usuarios = User::where('idTipoUsuario','=',3)->get();
+        $usuarios = User::where('idTipoUsuario','=',4)->get();
         $total = count($usuarios);
+        $escuelas = Escuela::all();
+        $totalEscuelas = count($escuelas) - 1;
+
      	for($i = 0; $i < $total-1; $i++){
-        	DB::table('Escuela')->insert([
+        	DB::table('Profesor')->insert([
                 'idUsuario'=> $usuarios[$i]->id,
-                
-                'Direccion' => $faker->address,
+                'idEscuela' => $escuelas[rand(0,$totalEscuelas)]->idEscuela,
+                'Direccion' => $faker->address                             ,
                 'Telefono' => $faker->tollFreePhoneNumber,
-                'Director' => $faker->name,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
         }
