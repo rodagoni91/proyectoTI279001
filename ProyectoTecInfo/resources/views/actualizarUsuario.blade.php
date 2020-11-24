@@ -13,7 +13,9 @@
     <div class="row px-3 py-3">
         <div class="col">
             <div class="card">
-                <div class="card-text text-center"><h3>Editar Usuario</h3></div>
+            <div class="card-header card-header-primary">
+                <h4 class="card-title">Actualizar Usuario {{$usuario->name}}</h4>
+              </div>
                 <div class="card-body">
                 <form method="POST" action="/actualizarUsuario">
                 {{csrf_field()}}

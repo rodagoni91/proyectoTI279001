@@ -43,9 +43,34 @@ class seederUsuario extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
 
-        for($i = 0; $i < 150; $i++){
+        //Escuelas
+        for($i = 0; $i < 50; $i++){
         	DB::table('users')->insert([
-                'idTipoUsuario'=> $tipos[rand(0,4)]->idTipoUsuario,
+                'idTipoUsuario'=> 3,
+                'name' => "Instituto ".$faker->word,
+                'phone' => $faker->tollFreePhoneNumber,
+                'email' => $faker->email,
+                'password'=>bcrypt('password'),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+        }
+
+        //Profes
+        for($i = 0; $i < 750; $i++){
+        	DB::table('users')->insert([
+                'idTipoUsuario'=> 4,
+                'name' => "Ing. ".$faker->name,
+                'phone' => $faker->tollFreePhoneNumber,
+                'email' => $faker->email,
+                'password'=>bcrypt('password'),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+        }
+
+         //Alumno
+         for($i = 0; $i < 2500; $i++){
+        	DB::table('users')->insert([
+                'idTipoUsuario'=> 5,
                 'name' => $faker->name,
                 'phone' => $faker->tollFreePhoneNumber,
                 'email' => $faker->email,

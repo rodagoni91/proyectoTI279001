@@ -18,13 +18,31 @@ class seederCurso extends Seeder
         $totalEscuelas = count($escuelas) - 1;
         $profesores = Profesor::all();
         $totalProfesores = count($profesores) - 1;
-        for($i = 0; $i < 150; $i++){
+
+        $dias = array('Diaria','Terciada');
+        $horas = array('7:00','8:00','9:00','10:00','11:00','12:00','13:00');
+
+        $idEscuela = 0;
+        $iContador = 0;
+
+        for($i = 0; $i < 500; $i++){
         	DB::table('Curso')->insert([
-                'idEscuela' => $escuelas[rand(0,$totalEscuelas)]->idEscuela,
-                'idProfesor' => $profesores[rand(0,$totalProfesores)]->idProfesor,
+                'idEscuela' => $escuelas[$idEscuela]->idEscuela,
                 'NombreCurso' => $faker->word,
+                'Dias' => $dias[rand(0,1)],
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
+
+            if($iContador == 10){
+                $idEscuela++;
+                $iContador = 0;
+            }
+            else{
+                $iContador++;
+            }
         }
+
+
+
     }
 }

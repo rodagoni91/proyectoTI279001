@@ -98,6 +98,18 @@
               <p>Profesores</p>
             </a>
           </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/administracionCursos ">
+            <i class="fas fa-chalkboard"></i>
+              <p>Cursos</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/admiAlumnos">
+            <i class="fas fa-user-graduate"></i>
+              <p>Alumnos</p>
+            </a>
+          </li>
           @endif
       
          

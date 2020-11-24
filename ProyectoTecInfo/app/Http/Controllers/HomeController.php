@@ -10,6 +10,9 @@ use App\TipoUsuario;
 use App\User;
 use App\Escuela;
 use App\Profesor;
+use App\Curso;
+use App\DetalleCurso;
+use App\Alumno;
 class HomeController extends Controller
 {
     /**
@@ -37,7 +40,6 @@ class HomeController extends Controller
         Auth::logout();
         return redirect('/login');
     }
-
 
     //Funciones de administracion de usuarios
     public function admiUsuarios(){
@@ -258,7 +260,7 @@ class HomeController extends Controller
         }  
     }
 
-     //Funciones de administracion de profesores
+    //Funciones de administracion de profesores
     public function admiProfesores(){
         if(Auth::user()->idTipoUsuario == 3){
             $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
@@ -302,13 +304,14 @@ class HomeController extends Controller
             $profesor->idEscuela = $request->idEscuela;
             $profesor->Direccion = filter_var($request->Direccion,FILTER_SANITIZE_STRING);
             $profesor->Telefono = filter_var($request->Telefono,FILTER_SANITIZE_STRING); 
+            $profesor->created_at = Carbon::now()->format('Y-m-d h:i:s');
             $profesor->save();
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Agregado Correctamente.');
             return redirect('/admiProfesores'); 
         }
         else{
-            return redirect('/home');
+            return redirect('/admiProfesores');
         }   
     }
 
@@ -318,13 +321,12 @@ class HomeController extends Controller
             $usuario = User::find($profesor->idUsuario);
             $usuario->delete();
             $profesor->delete();
-            $usuario->delete();
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Eliminado Correctamente.');
             return redirect('/admiProfesores');   
         }
         else{
-            return redirect('/home');
+            return redirect('/admiProfesores');
         }   
     }
 
@@ -337,7 +339,7 @@ class HomeController extends Controller
             return view('actualizarProfesor')->with('profesor',$profesor);
         }
         else{
-            return redirect('/home');
+            return redirect('/admiProfesores');
         }   
     }
 
@@ -368,6 +370,303 @@ class HomeController extends Controller
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Profesor Actualizado Correctamente.');
             return redirect('/actualizarProfesor/'.$request->idProfesor); 
+        }
+        else{
+            return redirect('/home');
+        }     
+    }
+
+    //Funciones de administracion de cursos
+    public function administracionCursos(){
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            $cursos = Curso::where('idEscuela','=', $escuela->idEscuela)->get();
+            $curso = Curso::where('idEscuela','=',$escuela)->get();
+            return view('admiCursos')->with('cursos',$cursos)->with('escuela',$escuela);
+        }
+        else{
+            return redirect('/administracionCursos');
+        } 
+
+    }
+
+    public function insertarCurso(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $validator = Validator::make($request->all(), [
+                'Nombre'=> 'required|string',
+                'Dias' => 'required|string',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/administracionCursos')->withInput()->withErrors($validator);
+            }
+
+            $curso = new Curso;
+            $curso->idEscuela = $request->idEscuela;
+            $curso->NombreCurso = $request->Nombre;
+            $curso->Dias = $request->Dias;
+            $curso->created_at = Carbon::now()->format('Y-m-d h:i:s');
+            $curso->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Curso Agregado Correctamente.');
+            return redirect('/administracionCursos'); 
+        }
+        else{
+            return redirect('/administracionCursos');
+        }   
+    }
+
+    public function vistaActualizarCurso($idCurso){
+        if(Auth::user()->idTipoUsuario == 3){
+            $curso = Curso::find($idCurso);
+            return view('actualizarCurso')->with('curso',$curso);
+        }
+        else{
+            return redirect('/administracionCursos');
+        }   
+    }
+
+    public function actualizarCurso(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $curso = Curso::find($request->idCurso);
+            $validator = Validator::make($request->all(), [
+                'Nombre'=> 'required|string',
+                'Dias' => 'required|string',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/administracionCursos')->withInput()->withErrors($validator);
+            }
+            $curso->NombreCurso = $request->Nombre;
+            $curso->Dias = $request->Dias;
+            $curso->updated_at = Carbon::now()->format('Y-m-d h:i:s');
+            $curso->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Curso Actualizado Correctamente.');
+            return redirect('/actualizarCurso/'.$request->idCurso); 
+        }
+        else{
+            return redirect('/administracionCursos');
+        }   
+    }
+
+    public function eliminarCurso(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $curso = Curso::find($request->idCurso);
+            $curso->delete();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Curso Eliminado Correctamente.');
+            return redirect('/administracionCursos');   
+        }
+        else{
+            return redirect('/administracionCursos');
+        }   
+    }
+
+    public function detalleCurso($id){
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            $cursos = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=','DetalleCurso.idProfesor')
+            ->join('users','users.id','=','Profesor.idUsuario')
+            ->select('Curso.*','DetalleCurso.Hora','DetalleCurso.CodigoCurso','users.name as NombreProfesor','DetalleCurso.idDetalleCurso')
+            ->where('DetalleCurso.idCurso','=',$id)
+            ->where('DetalleCurso.deleted_at','=',null)
+            ->get();
+            $curso = Curso::find($id);
+            $profesores = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->select('Profesor.*','users.*')
+            ->where('users.idTipoUsuario','=',4)
+            ->where('Profesor.idEscuela','=',$escuela->idEscuela)
+            ->get();
+            return view('detalleCurso')->with('cursos',$cursos)->with('curso',$curso)->with('profesores',$profesores)->with('escuela',$escuela);
+        }
+        else{
+            return redirect('/admiProfesores');
+        } 
+    }
+
+    public function asignarProfesor(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $detalle = new DetalleCurso;
+            $detalle->idProfesor = $request->idProfesor;
+            $detalle->idCurso = $request->idCurso;
+            $detalle->Hora = $request->Hora;
+            $detalle->CodigoCurso =  substr(md5(microtime()),rand(0,26),6);
+            $detalle->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Curso Asignado Correctamente.');
+            return redirect('/detalleCurso/'.$detalle->idCurso);
+        }
+        else{
+            return redirect('/admiProfesores');
+        } 
+    }
+
+    public function eliminarAsignacion(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $detalle = DetalleCurso::find($request->idDetalleCurso);
+            $detalle->delete();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Asignacion Eliminado Correctamente.');
+            return redirect('/detalleCurso/'.$request->idCurso); 
+        }
+        else{
+            return redirect('/detalleCurso/'.$request->idCurso);
+        }   
+    }
+
+    public function vistaActualizarAsignacion($idAsignacion){
+        $detalle = DetalleCurso::find($idAsignacion);
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            $detalle = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=','DetalleCurso.idProfesor')
+            ->join('users','users.id','=','Profesor.idUsuario')
+            ->select('Curso.*','DetalleCurso.Hora','DetalleCurso.CodigoCurso','users.name as NombreProfesor','DetalleCurso.idDetalleCurso','Profesor.idProfesor')
+            ->where('DetalleCurso.idDetalleCurso','=',$idAsignacion)
+            ->where('DetalleCurso.deleted_at','=',null)
+            ->first();
+            $curso = Curso::find($detalle->idCurso);
+            $profesores = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->select('Profesor.*','users.*')
+            ->where('users.idTipoUsuario','=',4)
+            ->where('Profesor.idEscuela','=',$escuela->idEscuela)
+            ->get();
+            return view('actualizarAsignacion')->with('detalle',$detalle)->with('curso',$curso)->with('profesores',$profesores)->with('escuela',$escuela);
+        }
+        else{
+            return redirect('/detalleCurso/'.$detalle->idDetalleCurso);
+        }   
+    }
+
+    public function actualizarAsignacion(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $detalle = DetalleCurso::find($request->idDetalle);
+            $detalle->idProfesor = $request->idProfesor;
+            $detalle->Hora = $request->Hora;
+            $detalle->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Curso Actualizado Correctamente.');
+            return redirect('/actualizarAsignacion/'.$request->idDetalle);
+        }
+        else{
+            return redirect('/admiProfesores');
+        } 
+    }
+
+    //Funciones de administracion de alumnos
+    public function admiAlumnos(){
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            $alumnos = Alumno::join('users','users.id','=','Alumno.idUsuario')
+            ->select('Alumno.*','users.*')
+            ->where('users.idTipoUsuario','=',5)
+            ->where('Alumno.idEscuela','=',$escuela->idEscuela)
+            ->get();
+            return view('administracionAlumnos')->with('alumnos',$alumnos)->with('escuela',$escuela);
+        }
+        else{
+            return redirect('/home');
+        }  
+    }
+
+    public function insertarAlumno(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $validator = Validator::make($request->all(), [
+                'name'=> 'required|string|max:255',
+                'phone' => 'required|string',
+                'email' => 'required|string|email|max:255|unique:users',
+                'Direccion' => 'required|string',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/admiAlumnos')->withInput()->withErrors($validator);
+            }
+            $usuario = new User;
+            $usuario->idTipoUsuario = 5;
+            $usuario->name = filter_var($request->name, FILTER_SANITIZE_STRING);
+            $usuario->email = filter_var($request->email,FILTER_SANITIZE_EMAIL);
+            $usuario->phone = filter_var($request->Telefono,FILTER_SANITIZE_STRING);
+            $usuario->password = bcrypt("password");
+            $usuario->created_at = Carbon::now()->format('Y-m-d h:i:s');
+            $usuario->save();
+            $alumno = new Alumno;
+            $alumno->idUsuario = $usuario->id;
+            $alumno->idEscuela = $request->idEscuela;
+            $alumno->Direccion = filter_var($request->Direccion,FILTER_SANITIZE_STRING);
+            $alumno->Telefono = filter_var($request->Telefono,FILTER_SANITIZE_STRING); 
+            $alumno->created_at = Carbon::now()->format('Y-m-d h:i:s');
+            $alumno->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Alumno Agregado Correctamente.');
+            return redirect('/admiAlumnos'); 
+        }
+        else{
+            return redirect('/admiAlumnos');
+        }   
+    }
+
+    public function eliminarAlumno(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $alumno = Alumno::find($request->idAlumno);
+            $usuario = User::find($alumno->idUsuario);
+            $usuario->delete();
+            $alumno->delete();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Alumno Eliminado Correctamente.');
+            return redirect('/admiAlumnos');   
+        }
+        else{
+            return redirect('/admiAlumnos');
+        }   
+    }
+
+    public function vistaActualizarAlumno($idAlumno){
+        if(Auth::user()->idTipoUsuario == 3){
+            $alumno = Alumno::join('users','users.id','=','Alumno.idUsuario')
+            ->select('Alumno.*','users.*')
+            ->where('Alumno.idAlumno','=',$idAlumno)
+            ->first();
+            return view('actualizarAlumno')->with('alumno',$alumno);
+        }
+        else{
+            return redirect('/admiAlumnos');
+        }   
+    }
+
+    public function actualizarAlumno(Request $request){
+        if(Auth::user()->idTipoUsuario == 3){
+            $alumno = Alumno::find($request->idAlumno);
+            $usuario = User::find($alumno->idUsuario);
+            $validator = Validator::make($request->all(), [
+                'name'=> 'required|string|max:255',
+                'Telefono' => 'required|string',
+                'Direccion' => 'required|string',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/actualizarAlumno/'.$request->idAlumno)->withInput()->withErrors($validator);
+            }
+            
+            $usuario->name = filter_var($request->name, FILTER_SANITIZE_STRING);
+            $usuario->phone = filter_var($request->Telefono,FILTER_SANITIZE_STRING);
+            $usuario->updated_at = Carbon::now()->format('Y-m-d h:i:s');
+            $usuario->save();
+            $alumno->Direccion = filter_var($request->Direccion,FILTER_SANITIZE_STRING);
+            $alumno->Telefono = filter_var($request->Telefono,FILTER_SANITIZE_STRING); 
+            $alumno->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Alumno Actualizado Correctamente.');
+            return redirect('/actualizarAlumno/'.$request->idAlumno); 
         }
         else{
             return redirect('/home');

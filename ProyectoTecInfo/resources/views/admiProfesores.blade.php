@@ -4,7 +4,7 @@
 <div class="container" style="margin-top:50px;">
 <ol class="breadcrumb">
 <li class="breadcrumb-item"><a href="/home">Panel</a></li>
-    <li class="breadcrumb-item active">Administración de Usuarios</li>
+    <li class="breadcrumb-item active">Administración de Profesores</li>
   </ol>
 </div>
  <!-- End Navbar -->
@@ -22,7 +22,7 @@
             </div>
           <div class="col-md-12">
             <div class="card">
-              <div class="card-header">
+            <div class="card-header card-header-primary">
                 <h4 class="card-title">Administración de Profesores</h4>
               </div>
               <div class="card-body">
@@ -60,7 +60,7 @@
                             $date = Date::parse($user->created_at);
                             echo $date->format('l d F Y');
                         @endphp
-                      </td>
+                      </td> 
 
                       <td class="text-center">
                            <a class="btn btn-round btn-warning btn-icon btn-sm" href="/actualizarProfesor/{{$user->idProfesor}}" ><i class="fas fa-edit"></i></a>

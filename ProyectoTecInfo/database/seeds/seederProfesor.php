@@ -20,14 +20,25 @@ class seederProfesor extends Seeder
         $escuelas = Escuela::all();
         $totalEscuelas = count($escuelas) - 1;
 
+        $idEscuela = 1;
+        $iCount = 0;
+
      	for($i = 0; $i < $total-1; $i++){
         	DB::table('Profesor')->insert([
                 'idUsuario'=> $usuarios[$i]->id,
-                'idEscuela' => $escuelas[rand(0,$totalEscuelas)]->idEscuela,
-                'Direccion' => $faker->address                             ,
+                'idEscuela' => $escuelas[$idEscuela]->idEscuela,
+                'Direccion' => $faker->address,
                 'Telefono' => $faker->tollFreePhoneNumber,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
+
+            if($iCount == 15){
+                $idEscuela++;
+                $iCount = 0;
+            }
+            else{
+                $iCount++;
+            }
         }
     }
 }

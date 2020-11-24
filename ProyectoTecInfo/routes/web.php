@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,3 +34,20 @@ Route::post('/insertarProfesor','HomeController@insertarProfesor')->name('insert
 Route::post('/eliminarProfesor','HomeController@eliminarProfesor')->name('eliminarProfesor');
 Route::get('/actualizarProfesor/{id}','HomeController@vistaActualizarProfesor')->name('vistaActualizarProfesor');
 Route::post('/actualizarProfesor','HomeController@actualizarProfesor')->name('actualizarProfesor');
+//Rutas de administracion de Cursos
+Route::get('/administracionCursos','HomeController@administracionCursos')->name('administracionCursos');
+Route::post('/insertarCurso','HomeController@insertarCurso')->name('insertarCurso');
+Route::get('/actualizarCurso/{idCurso}','HomeController@vistaActualizarCurso')->name('vistaActualizarCurso');
+Route::post('/actualizarCurso','HomeController@actualizarCurso')->name('actualizarCurso');
+Route::post('/eliminarCurso','HomeController@eliminarCurso')->name('eliminarCurso');
+Route::get('/detalleCurso/{idCurso}','HomeController@detalleCurso')->name('detalleCurso');
+Route::post('/asignarProfesor','HomeController@asignarProfesor')->name('asignarProfesor');
+Route::post('/eliminarAsignacion','HomeController@eliminarAsignacion')->name('eliminarAsignacion');
+Route::get('/actualizarAsignacion/{idDetalle}','HomeController@vistaActualizarAsignacion')->name('vistaActualizarAsignacion');
+Route::post('/actualizarAsignacion','HomeController@actualizarAsignacion')->name('actualizarAsignacion');
+//Rutas de administracion de alumnos
+Route::get('/admiAlumnos','HomeController@admiAlumnos')->name('admiAlumnos');
+Route::post('/insertarAlumno','HomeController@insertarAlumno')->name('insertarAlumno');
+Route::post('/eliminarAlumno','HomeController@eliminarAlumno')->name('eliminarAlumno');
+Route::get('/actualizarAlumno/{id}','HomeController@vistaActualizarAlumno')->name('vistaActualizarAlumno');
+Route::post('/actualizarAlumno','HomeController@actualizarAlumno')->name('actualizarAlumno');

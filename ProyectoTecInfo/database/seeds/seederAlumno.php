@@ -3,8 +3,9 @@ use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 use Carbon\Carbon;
 use App\tipoUsuario;
-use App\User; 
-class seederEscuela extends Seeder
+use App\User;
+use App\Escuela;
+class seederAlumno extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,16 +15,28 @@ class seederEscuela extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        $usuarios = User::where('idTipoUsuario','=',3)->get();
+        $usuarios = User::where('idTipoUsuario','=',5)->get();
         $total = count($usuarios);
+        $escuelas = Escuela::all();
+        $totalEscuelas = count($escuelas) - 1;
+        $idEscuela = 1;
+        $iCount = 0;
      	for($i = 0; $i < $total-1; $i++){
-        	DB::table('Escuela')->insert([
+        	DB::table('Alumno')->insert([
                 'idUsuario'=> $usuarios[$i]->id,
+                'idEscuela' => $escuelas[idEscuela]->idEscuela,
                 'Direccion' => $faker->address,
                 'Telefono' => $faker->tollFreePhoneNumber,
-                'Director' => 'Ing. '.$faker->name,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
+
+            if($iCount == 20){
+                $idEscuela++;
+                $iCount = 0;
+            }
+            else{
+                $iCount++;
+            }
         }
     }
 }
