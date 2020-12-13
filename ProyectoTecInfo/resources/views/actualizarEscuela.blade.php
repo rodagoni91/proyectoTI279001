@@ -2,11 +2,21 @@
 @section('contenido')
 
 <div class="container" style="margin-top:20px;">
-<ol class="breadcrumb">
-<li class="breadcrumb-item"><a href="/home">Panel</a></li>
-    <li class="breadcrumb-item"><a href="/admiEscuelas">Administración de Escuelas</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Actualizar Escuela {{$escuela->nombreEscuela}}</li>
-  </ol>
+    @if(Auth::user()->idTipoUsuario == 1 || Auth::user()->idTipoUsuario == 2)
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/home">Panel</a></li>
+        <li class="breadcrumb-item"><a href="/admiEscuelas">Administración de Escuelas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Actualizar Escuela {{$escuela->nombreEscuela}}</li>
+    </ol>
+    @endif
+
+    @if(Auth::user()->idTipoUsuario == 3)
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/home">Panel</a></li>
+        
+        <li class="breadcrumb-item active" aria-current="page">Actualizar Escuela {{$escuela->nombreEscuela}}</li>
+    </ol>
+    @endif
 </div>
 
 <div class="container">

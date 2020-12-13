@@ -25,21 +25,34 @@ class seederCurso extends Seeder
         $idEscuela = 0;
         $iContador = 0;
 
-        for($i = 0; $i < 500; $i++){
+        for($i = 0; $i < $totalEscuelas - 1; $i++){
         	DB::table('Curso')->insert([
-                'idEscuela' => $escuelas[$idEscuela]->idEscuela,
+                'idEscuela' => $escuelas[$i]->idEscuela,
                 'NombreCurso' => $faker->word,
                 'Dias' => $dias[rand(0,1)],
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
 
-            if($iContador == 10){
-                $idEscuela++;
-                $iContador = 0;
-            }
-            else{
-                $iContador++;
-            }
+        }
+
+        for($i = 0; $i < $totalEscuelas - 1; $i++){
+        	DB::table('Curso')->insert([
+                'idEscuela' => $escuelas[$i]->idEscuela,
+                'NombreCurso' => $faker->word,
+                'Dias' => $dias[rand(0,1)],
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+
+        }
+
+        for($i = 0; $i < $totalEscuelas - 1; $i++){
+        	DB::table('Curso')->insert([
+                'idEscuela' => $escuelas[$i]->idEscuela,
+                'NombreCurso' => $faker->word,
+                'Dias' => $dias[rand(0,1)],
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+
         }
 
 

@@ -19,26 +19,41 @@ class seederProfesor extends Seeder
         $total = count($usuarios);
         $escuelas = Escuela::all();
         $totalEscuelas = count($escuelas) - 1;
+        $idUsuario = 0;
 
-        $idEscuela = 1;
-        $iCount = 0;
-
-     	for($i = 0; $i < $total-1; $i++){
+        for($i = 0; $i < $totalEscuelas-1; $i++){
         	DB::table('Profesor')->insert([
-                'idUsuario'=> $usuarios[$i]->id,
-                'idEscuela' => $escuelas[$idEscuela]->idEscuela,
+                'idUsuario'=> $usuarios[$idUsuario]->id,
+                'idEscuela' => $escuelas[$i]->idEscuela,
                 'Direccion' => $faker->address,
                 'Telefono' => $faker->tollFreePhoneNumber,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
-
-            if($iCount == 15){
-                $idEscuela++;
-                $iCount = 0;
-            }
-            else{
-                $iCount++;
-            }
+            $idUsuario++;
         }
+
+        for($i = 0; $i < $totalEscuelas-1; $i++){
+        	DB::table('Profesor')->insert([
+                'idUsuario'=> $usuarios[$idUsuario]->id,
+                'idEscuela' => $escuelas[$i]->idEscuela,
+                'Direccion' => $faker->address,
+                'Telefono' => $faker->tollFreePhoneNumber,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+            $idUsuario++;
+        }
+
+        for($i = 0; $i < $totalEscuelas-1; $i++){
+        	DB::table('Profesor')->insert([
+                'idUsuario'=> $usuarios[$idUsuario]->id,
+                'idEscuela' => $escuelas[$i]->idEscuela,
+                'Direccion' => $faker->address,
+                'Telefono' => $faker->tollFreePhoneNumber,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+            $idUsuario++;
+        }
+
+     	
     }
 }

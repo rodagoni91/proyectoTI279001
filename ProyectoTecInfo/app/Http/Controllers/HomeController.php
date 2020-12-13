@@ -32,7 +32,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
+            return view('home')->with('escuela',$escuela);
+        }
+        else{
+            return view('home');
+        }
+
+        
     }
 
     public function cerrarSesion()
@@ -220,13 +228,21 @@ class HomeController extends Controller
             ->first();
             return view('actualizarEscuela')->with('escuela',$escuela);
         }
+        if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::join('users','users.id','=','Escuela.idUsuario')
+            ->join('TipoUsuario','TipoUsuario.idTipoUsuario','=','users.idTipoUsuario')
+            ->select('Escuela.*','users.*','users.name as nombreEscuela','TipoUsuario.nombre as nombretipousuario')
+            ->where('users.id','=',Auth::user()->id)
+            ->first();
+            return view('actualizarEscuela')->with('escuela',$escuela);
+        }
         else{
             return redirect('/home');
         }  
     }
 
     public function actualizarEscuela(Request $request){
-        if(Auth::user()->idTipoUsuario == 1 || Auth::user()->idTipoUsuario == 2){
+        if(Auth::user()->idTipoUsuario == 1 || Auth::user()->idTipoUsuario == 2 || Auth::user()->idTipoUsuario == 3){
             $escuela = Escuela::find($request->idEscuela);
             $usuario = User::find($escuela->idUsuario);
             $validator = Validator::make($request->all(), [

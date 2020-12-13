@@ -110,6 +110,13 @@
               <p>Alumnos</p>
             </a>
           </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/actualizarEscuela/{{$escuela->idEscuela}}">
+            <i class="fas fa-cog"></i>
+              <p>Mi Informacion</p>
+            </a>
+          </li>
           @endif
       
          

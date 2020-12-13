@@ -104,6 +104,22 @@
             </a>
         </div>
 
+
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <a href="/actualizarEscuela/{{$escuela->idEscuela}}">
+                <div class="card card-stats mx-auto" style="height:150px; width: 100%">
+
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon" style="linear-gradient(60deg, #2BD141, #2BD141) !important;">
+                        <i class="fas fa-cog"></i>
+                        </div>
+                        <p class="card-category">Configuracion</p>
+                        <h3 class="card-title">Mis Datos</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         @endif
 
 

@@ -44,7 +44,7 @@ class seederUsuario extends Seeder
         ]);
 
         //Escuelas
-        for($i = 0; $i < 50; $i++){
+        for($i = 0; $i < 10; $i++){
         	DB::table('users')->insert([
                 'idTipoUsuario'=> 3,
                 'name' => "Instituto ".$faker->word,
@@ -56,7 +56,7 @@ class seederUsuario extends Seeder
         }
 
         //Profes
-        for($i = 0; $i < 750; $i++){
+        for($i = 0; $i < 30; $i++){
         	DB::table('users')->insert([
                 'idTipoUsuario'=> 4,
                 'name' => "Ing. ".$faker->name,
@@ -68,7 +68,7 @@ class seederUsuario extends Seeder
         }
 
          //Alumno
-         for($i = 0; $i < 2500; $i++){
+         for($i = 0; $i < 30; $i++){
         	DB::table('users')->insert([
                 'idTipoUsuario'=> 5,
                 'name' => $faker->name,
