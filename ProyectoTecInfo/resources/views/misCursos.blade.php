@@ -18,7 +18,7 @@
   @if(Auth::user()->idTipoUsuario == 5)
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/home">Panel</a></li>
-    <li class="breadcrumb-item active">Cursos</li>
+    <li class="breadcrumb-item active">Mis Cursos Inscritos</li>
   </ol>
   @endif
 </div>
@@ -32,18 +32,10 @@
             <div class="col-md-3">
               <!--<a style="color:white;" class="btn btn-round btn-sucess"  href="/admiUsuariosInhabilitados">Usuarios Inhabilitados</a>-->
             </div>
-            @if(Auth::user()->idTipoUsuario != 5 && Auth::user()->idTipoUsuario != 4)
-            <div class="col-md-3">
-              <a style="color:white;" class="btn btn-round btn-primary" data-toggle="modal" data-target="#insertUser">Dar de Alta un Curso</a>
-            </div>
-            @endif
+            
           <div class="col-md-12">
             <div class="card">
-              @if(Auth::user()->idTipoUsuario != 5)
-              <div class="card-header card-header-primary">
-                <h4 class="card-title">Administración de Cursos</h4>
-              </div>
-              @endif
+             
               @if(Auth::user()->idTipoUsuario == 5)
               <div class="card-header card-header-primary">
                 <h4 class="card-title">Cursos</h4>
@@ -53,80 +45,7 @@
                 <div class="toolbar">
                   <!--        Here you can write extra buttons/actions for the toolbar              -->
                 </div>
-                @if(Auth::user()->idTipoUsuario != 5)
-                <table id="datatable" class="table table-striped table-bordered text-center" cellspacing="0" width="100%">
-                  <thead>
-                    <tr>
-                      <th>Nombre del Curso</th>
-                      <th>Dias</th>
-                      <th>Creado el</th>
-                      <th class="disabled-sorting ">Acciones</th>
-                    </tr> 
-                  </thead>
-                  <tfoot>
-                      <th>Nombre del Curso</th>
-                      <th>Dias</th>
-                      <th>Creado el</th>
-                      <th class="disabled-sorting ">Acciones</th>
-                  </tfoot>
-                  <tbody>
-                  @foreach($cursos as $curso)
-                    <tr>
-                      <td>{{$curso->NombreCurso}}</td>
-                      <td>{{$curso->Dias}}</td>
-                      
-                      <td>
-                        @php
-                            $date = Date::parse($curso->created_at);
-                            echo $date->format('l d F Y');
-                        @endphp
-                      </td>
-
-                      <td class="text-center">
-                        @if(Auth::user()->idTipoUsuario == 3)
-                        <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detalleCurso/{{$curso->idCurso}}" ><i class="fas fa-eye"></i></a>
-                        <a class="btn btn-round btn-warning btn-icon btn-sm" href="/actualizarCurso/{{$curso->idCurso}}" ><i class="fas fa-edit"></i></a>
-                        <a href="#" class="btn btn-round btn-danger btn-icon btn-sm" data-toggle="modal" data-target="#exampleModal{{$curso->idCurso}}"><i class="fas fa-times"></i></a>
-                        <div class="modal fade" id="exampleModal{{$curso->idCurso}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{$curso->idCurso}}" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel{{$curso->idCurso}}">Borrar usuario</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <form action="/eliminarCurso" method="post" >
-                                      {{csrf_field()}}
-                                        <div class="modal-body">
-
-                                            <input type="hidden" name="idCurso" value="{{$curso->idCurso}}">
-                                            <p style="float:left;">
-                                            Estas seguro que quieres eliminar el curso {{$curso->NombreCurso}}?<br><br><br><br>
-                                          </p>
-                                          <br><br><br><br>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-round btn-secondary" data-dismiss="modal">Cerrar</button>
-                                            <button type="submit" class="btn btn-round btn-danger">Eliminar</button>
-                                        </div>
-                                    </form>
-
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if(Auth::user()->idTipoUsuario == 4)
-                        <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detalleMiCurso/{{$curso->idDetalleCurso}}" ><i class="fas fa-eye"></i></a>
-                        @endif
-                      </td>
-                    </tr>
-                    @endforeach
-
-                  </tbody>
-                </table>
-                @endif
+               
 
                 @if(Auth::user()->idTipoUsuario == 5)
                 <table id="datatable" class="table table-striped table-bordered text-center" cellspacing="0" width="100%">
@@ -136,7 +55,7 @@
                       <th>Dias</th>
                       <th>Hora</th>
                       <th>Profesor</th>
-                      <th class="disabled-sorting ">Inscribir Materia</th>
+                      <th class="disabled-sorting ">Detalles</th>
                     </tr> 
                   </thead>
                   <tfoot>
@@ -144,7 +63,7 @@
                       <th>Dias</th>
                       <th>Hora</th>
                       <th>Profesor</th>
-                      <th class="disabled-sorting ">Inscribir Materia</th>
+                      <th class="disabled-sorting ">Detalles</th>
                   </tfoot>
                   <tbody>
                   @foreach($cursos as $curso)
@@ -154,8 +73,8 @@
                       <td>{{$curso->Hora}}</td>
                       <td>{{$curso->NombreProfesor}}</td>
 
-                      <td class="text-center">
-                      <a style="color:white;" class="btn btn-round btn-primary btn-icon btn-sm" data-toggle="modal" data-target="#insertUser"><i class="fas fa-chalkboard"></i></a>
+                      <td class="text-center"> 
+                      <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detalleMiCurso/{{$curso->idCurso}}" ><i class="fas fa-eye"></i></a>
                       </td>
                     </tr>
                     @endforeach

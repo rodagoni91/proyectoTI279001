@@ -110,13 +110,47 @@
               <p>Alumnos</p>
             </a>
           </li>
-
           <li class="nav-item ">
             <a class="nav-link" href="/actualizarEscuela/{{$escuela->idEscuela}}">
             <i class="fas fa-cog"></i>
               <p>Mi Informacion</p>
             </a>
           </li>
+          @endif
+
+          @if(Auth::user()->idTipoUsuario == 4)
+          <li class="nav-item ">
+            <a class="nav-link" href="/cursosEscuela">
+            <i class="fas fa-chalkboard"></i>
+              <p>Mis Cursos</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/admiTareas">
+            <i class="fas fa-book"></i>
+              <p>Tareas</p>
+            </a>
+          </li>
+
+          @endif
+
+
+          @if(Auth::user()->idTipoUsuario == 5)
+          <li class="nav-item ">
+            <a class="nav-link" href="/admiCursosEscuela">
+            <i class="fas fa-chalkboard"></i>
+              <p>Cursos</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/misCursosInscritos">
+            <i class="fas fa-chalkboard-teacher"></i>
+              <p>Mis Cursos</p>
+            </a>
+          </li>
+
+
+
           @endif
       
          

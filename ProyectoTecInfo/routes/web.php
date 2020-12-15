@@ -51,3 +51,15 @@ Route::post('/insertarAlumno','HomeController@insertarAlumno')->name('insertarAl
 Route::post('/eliminarAlumno','HomeController@eliminarAlumno')->name('eliminarAlumno');
 Route::get('/actualizarAlumno/{id}','HomeController@vistaActualizarAlumno')->name('vistaActualizarAlumno');
 Route::post('/actualizarAlumno','HomeController@actualizarAlumno')->name('actualizarAlumno');
+//Rutas de profesores
+Route::get('/admiTareas','HomeController@admiTareas')->name('admiTareas');
+Route::get('/cursosEscuela','HomeController@cursosEscuela')->name('cursosEscuela');
+Route::post('/crearTarea','HomeController@crearTarea')->name('crearTarea');
+Route::get('/detalleMiCurso/{idCurso}','HomeController@detalleMiCurso')->name('detalleMiCurso');
+Route::get('/detalleAlumno/{idAlumno}','HomeController@detalleAlumno')->name('detalleAlumno');  
+Route::get('/vistaActualizarTarea/{idTarea}','HomeController@vistaActualizarTarea')->name('vistaActualizarTarea');
+Route::post('/actualizarTarea','HomeController@actualizarTarea')->name('actualizarTarea');
+//Rutas de alumnos
+Route::post('/inscribirCurso','HomeController@inscribirCurso')->name('inscribirCurso');
+Route::get('/admiCursosEscuela','HomeController@admiCursosEscuela')->name('admiCursosEscuela');
+Route::get('/misCursosInscritos','HomeController@misCursosInscritos')->name('misCursosInscritos');

@@ -13,6 +13,8 @@ use App\Profesor;
 use App\Curso;
 use App\DetalleCurso;
 use App\Alumno;
+use App\Inscripcion;
+use App\Tareas;
 class HomeController extends Controller
 {
     /**
@@ -348,11 +350,17 @@ class HomeController extends Controller
 
     public function vistaActualizarProfesor($idProfesor){
         if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
             $profesor = Profesor::join('users','users.id','=','Profesor.idUsuario')
             ->select('Profesor.*','users.*')
             ->where('Profesor.idProfesor','=',$idProfesor)
             ->first();
-            return view('actualizarProfesor')->with('profesor',$profesor);
+            if($profesor->idEscuela == $escuela->idEscuela){
+                return view('actualizarProfesor')->with('profesor',$profesor)->with('escuela',$escuela);
+            }
+            else{
+                return redirect('/admiProfesores');
+            }   
         }
         else{
             return redirect('/admiProfesores');
@@ -407,6 +415,7 @@ class HomeController extends Controller
     }
 
     public function insertarCurso(Request $request){
+        
         if(Auth::user()->idTipoUsuario == 3){
             $validator = Validator::make($request->all(), [
                 'Nombre'=> 'required|string',
@@ -418,7 +427,7 @@ class HomeController extends Controller
                 Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
                 return redirect('/administracionCursos')->withInput()->withErrors($validator);
             }
-
+           
             $curso = new Curso;
             $curso->idEscuela = $request->idEscuela;
             $curso->NombreCurso = $request->Nombre;
@@ -436,8 +445,14 @@ class HomeController extends Controller
 
     public function vistaActualizarCurso($idCurso){
         if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
             $curso = Curso::find($idCurso);
-            return view('actualizarCurso')->with('curso',$curso);
+            if($curso->idEscuela == $escuela->idEscuela){
+                return view('actualizarCurso')->with('curso',$curso)->with('escuela',$escuela);
+            }
+            else{
+                return redirect('/administracionCursos');
+            }   
         }
         else{
             return redirect('/administracionCursos');
@@ -500,6 +515,24 @@ class HomeController extends Controller
             ->where('Profesor.idEscuela','=',$escuela->idEscuela)
             ->get();
             return view('detalleCurso')->with('cursos',$cursos)->with('curso',$curso)->with('profesores',$profesores)->with('escuela',$escuela);
+        }
+        else if(Auth::user()->idTipoUsuario == 4){
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+            $curso = Curso::find($id);
+            $profesores = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->select('Profesor.*','users.*')
+            ->where('users.idTipoUsuario','=',4)
+            ->where('Profesor.idEscuela','=',$escuela->idEscuela)
+            ->get();
+            $cursos = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=','DetalleCurso.idProfesor')
+            ->join('users','users.id','=','Profesor.idUsuario')
+            ->select('Curso.*','DetalleCurso.Hora','DetalleCurso.CodigoCurso','users.name as NombreProfesor','DetalleCurso.idDetalleCurso')
+            ->where('DetalleCurso.idCurso','=',$id)
+            ->where('DetalleCurso.deleted_at','=',null)
+            ->get();
+            return view('detallesCurso')->with('cursos',$cursos)->with('curso',$curso)->with('profesores',$profesores)->with('escuela',$escuela);
         }
         else{
             return redirect('/admiProfesores');
@@ -590,7 +623,6 @@ class HomeController extends Controller
             return redirect('/home');
         }  
     }
-
     public function insertarAlumno(Request $request){
         if(Auth::user()->idTipoUsuario == 3){
             $validator = Validator::make($request->all(), [
@@ -628,7 +660,6 @@ class HomeController extends Controller
             return redirect('/admiAlumnos');
         }   
     }
-
     public function eliminarAlumno(Request $request){
         if(Auth::user()->idTipoUsuario == 3){
             $alumno = Alumno::find($request->idAlumno);
@@ -643,20 +674,24 @@ class HomeController extends Controller
             return redirect('/admiAlumnos');
         }   
     }
-
     public function vistaActualizarAlumno($idAlumno){
         if(Auth::user()->idTipoUsuario == 3){
+            $escuela = Escuela::where('idUsuario','=', Auth::user()->id)->first();
             $alumno = Alumno::join('users','users.id','=','Alumno.idUsuario')
             ->select('Alumno.*','users.*')
             ->where('Alumno.idAlumno','=',$idAlumno)
             ->first();
-            return view('actualizarAlumno')->with('alumno',$alumno);
+            if($alumno->idEscuela == $escuela->idEscuela){
+                return view('actualizarAlumno')->with('alumno',$alumno)->with('escuela',$escuela);
+            }
+            else{
+                return redirect('/admiAlumnos');
+            }   
         }
         else{
             return redirect('/admiAlumnos');
         }   
     }
-
     public function actualizarAlumno(Request $request){
         if(Auth::user()->idTipoUsuario == 3){
             $alumno = Alumno::find($request->idAlumno);
@@ -687,6 +722,209 @@ class HomeController extends Controller
         else{
             return redirect('/home');
         }     
+    }
+    //Funciones de profesores
+    public function cursosEscuela(){
+        $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+        $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+
+        $cursos = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+        ->where('DetalleCurso.idProfesor','=',$profesor->idProfesor)
+        ->select('Curso.*','DetalleCurso.*')->get();
+
+        return view('admiCursos')->with('profesor', $profesor)->with('cursos',$cursos)->with('escuela',$escuela);
+    }
+    public function detalleMiCurso($idCurso){
+        if(Auth::user()->idTipoUsuario == 4){
+            $curso = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->select('DetalleCurso.*','Curso.*')
+            ->where('DetalleCurso.idDetalleCurso','=',$idCurso)
+            ->first();            
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+            $alumnos = Inscripcion::join('Alumno','Alumno.idAlumno','=','Inscripcion.idAlumno')
+            ->join('users','users.id','=','Alumno.idUsuario')
+            ->where('Inscripcion.idDetalleInscripcion','=', $idCurso)
+            ->select('users.name as NombreAlumno','users.email as emailAlumno','Alumno.idAlumno','Inscripcion.created_at as FechaInscripcion')
+            ->get();
+            return view('detallesCurso')->with('profesor', $profesor)->with('alumnos',$alumnos)->with('escuela',$escuela)->with('curso',$curso);
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function crearTarea(Request $request){
+        if(Auth::user()->idTipoUsuario == 4){
+            $validator = Validator::make($request->all(), [
+                'fecha'=> 'required|string|max:255',
+                'hora' => 'required|string',
+                'TituloTarea'=> 'required|string|max:255',
+                'DescripcionTarea' => 'required|string|max:255',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/admiTareas')->withInput()->withErrors($validator);
+            }
+            $tarea = new Tareas;
+            $tarea->idDetalleCurso = $request->curso;
+            $tarea->Fecha = $request->fecha;
+            $tarea->Hora = $request->hora;
+            $tarea->TituloTarea = $request->name;
+            $tarea->DescripcionTarea = $request->descripcion;
+            $tarea->created_at = Carbon::now()->format('Y-m-d h:i:s');
+            $tarea->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Tarea Creada Correctamente.');
+            return redirect('/admiTareas');
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function admiTareas(){
+        if(Auth::user()->idTipoUsuario == 4){
+            $horas = array("8:00 am","9:00 am","12:00 pm","15:00 pm","18:00 pm","19:00 pm","20:00 pm");
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+            $tareas = DetalleCurso::join('Tareas','Tareas.idDetalleCurso','=','DetalleCurso.idDetalleCurso')
+            ->join('Curso','Curso.idCurso','=','DetalleCurso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=','DetalleCurso.idProfesor')
+            ->select('Tareas.*','Curso.*')
+            ->where('Profesor.idProfesor','=',$profesor->idProfesor)->get();
+            $cursos = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->where('DetalleCurso.idProfesor','=',$profesor->idProfesor)
+            ->select('Curso.*','DetalleCurso.*')->get();    
+            return view('admiTareas')->with('profesor',$profesor)->with('escuela',$escuela)->with('tareas',$tareas)->with('horas',$horas)->with('cursos',$cursos);
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function vistaActualizarTarea($id){
+        if(Auth::user()->idTipoUsuario){
+            $horas = array("8:00 am","9:00 am","12:00 pm","15:00 pm","18:00 pm","19:00 pm","20:00 pm");
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+            $tarea = Tarea::find($id);
+            return view('actualizarTarea')->with('horas',$horas)->with('profesor',$profesor)->with('escuela',$escuela)->with('tarea',$tarea);
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function actualizarTarea(Request $request){
+        if(Auth::user()->idTipoUsuario == 4){
+            $tarea = Tarea::where('idTarea','=',$request->idTarea);
+            $validator = Validator::make($request->all(), [
+                'fecha'=> 'required|string|max:255',
+                'hora' => 'required|string',
+                'TituloTarea'=> 'required|string|max:255',
+                'DescripcionTarea' => 'required|string|max:255',
+            ]);
+            if ($validator->fails())
+            {
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Hubo un error, favor de checar los campos');
+                return redirect('/actualizarTarea/'.$tarea->idTarea);
+            }
+           
+            $tarea->idDetalleCurso = $request->curso;
+            $tarea->Fecha = $request->fecha;
+            $tarea->Hora = $request->hora;
+            $tarea->TituloTarea = $request->name;
+            $tarea->DescripcionTarea = $request->descripcion;
+            $tarea->updated_at = Carbon::now()->format('Y-m-d h:i:s');
+            $tarea->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'Tarea Creada Correctamente.');
+            return redirect('/actualizarTarea/'.$tarea->idTarea);
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    //Funciones de alumnos
+    public function inscribirCurso(Request $request){
+        if(Auth::user()->idTipoUsuario == 5){
+            $detalle = DetalleCurso::where('CodigoCurso','=',$request->Codigo)->first();
+           
+            if($detalle != null){
+                $curso = Curso::where('idCurso','=', $detalle->idCurso)->first();
+                $estudiante = Alumno::where('idUsuario','=', Auth::user()->id)->first();
+                $escuela = Escuela::where('idEscuela','=', $estudiante->idEscuela)->first();
+                if($escuela->idEscuela == $curso->idEscuela){
+                    $inscripcion = Inscripcion::where('idAlumno','=',$estudiante->idAlumno)
+                    ->where('idDetalleInscripcion','=',$detalle->idDetalleCurso)
+                    ->first();
+                    
+                    if($inscripcion == null)
+                    {
+                        $inscripcion = new Inscripcion;
+                        $inscripcion->idAlumno = $estudiante->idAlumno;
+                        $inscripcion->idDetalleInscripcion = $detalle->idDetalleCurso;
+                        $inscripcion->created_at = Carbon::now()->format('Y-m-d h:i:s');
+                        $inscripcion->save();
+                        Session::flash('alert-class', 'alert-success');
+                        Session::flash('mensaje', 'Inscripción a Curso Realizada Correctamente.');
+                        return redirect('/admiCursosEscuela');
+                    }
+                    else{
+                        Session::flash('alert-class', 'alert-danger');
+                        Session::flash('mensaje', 'Error Ud. Ya Inscribio este Curso.');
+                        return redirect('/admiCursosEscuela');
+                    }
+                }
+                else{
+                    Session::flash('alert-class', 'alert-danger');
+                    Session::flash('mensaje', 'Error Curso no Encontrado.');
+                    return redirect('/admiCursosEscuela');
+                }
+            }
+            else{
+                Session::flash('alert-class', 'alert-danger');
+                Session::flash('mensaje', 'Error Curso no Encontrado.');
+                return redirect('/admiCursosEscuela');
+            }
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function admiCursosEscuela(){
+        if(Auth::user()->idTipoUsuario == 5){
+            $estudiante = Alumno::where('idUsuario','=', Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=', $estudiante->idEscuela)->first();
+            $cursos = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=','DetalleCurso.idProfesor')
+            ->join('users','users.id','=','Profesor.idUsuario')
+            ->where('Curso.idEscuela','=',$escuela->idEscuela)
+            ->select('Curso.*','DetalleCurso.*','users.name as NombreProfesor')->get();
+            
+            return view('admiCursos')->with('estudiante',$estudiante)->with('escuela',$escuela)->with('cursos',$cursos);
+
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function misCursosInscritos(){
+        if(Auth::user()->idTipoUsuario == 5){
+            $estudiante = Alumno::where('idUsuario','=', Auth::user()->id)->first();
+            $escuela = Escuela::where('idEscuela','=', $estudiante->idEscuela)->first();
+            $cursos = Inscripcion::join('DetalleCurso','DetalleCurso.idDetalleCurso','=','Inscripcion.idDetalleInscripcion')
+            ->join('Curso','Curso.idCurso','=','DetalleCurso.idCurso')
+            ->join('Profesor','Profesor.idProfesor','=', 'DetalleCurso.idProfesor')
+            ->join('users','users.id','=','Profesor.idUsuario')
+            ->select('Curso.*','DetalleCurso.*','users.name as NombreProfesor')
+            ->where('Inscripcion.idAlumno','=', $estudiante->idAlumno)
+            ->get();
+            return view('misCursos')->with('estudiante',$estudiante)->with('escuela',$escuela)->with('cursos',$cursos);
+        }
+        else{
+            return redirect('/home');
+        }
     }
 
 }
