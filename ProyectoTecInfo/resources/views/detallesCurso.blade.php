@@ -33,7 +33,7 @@
                         </div>
                         <div class="col-sm-2 col-md-2"></div>
                         <div class="col-sm-2 col-md-2">
-                        <a style="color:white;" class="btn btn-round btn-primary" data-toggle="modal" data-target="#insertUser">Descargar Lista de Asistencia</a>
+                        <a style="color:white;" class="btn btn-round btn-primary" href="/exportarXLS">Descargar Lista de Asistencia</a>
                         </div>
                         <div class="col-md-12 col-sm-12  text-center">
                             <h4><strong>Alumnos Inscritos</strong></h4>

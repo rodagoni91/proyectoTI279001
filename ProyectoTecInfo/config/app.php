@@ -177,6 +177,7 @@ return [
 
         Laraveles\Spanish\SpanishServiceProvider::class,
         Jenssegers\Date\DateServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -230,6 +231,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Date' => Jenssegers\Date\Date::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

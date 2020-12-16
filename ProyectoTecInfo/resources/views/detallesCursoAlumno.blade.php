@@ -35,8 +35,19 @@
                             </h4>
                         </div>
                         <div class="col-sm-2 col-md-2"></div>
-                        <div class="col-sm-2 col-md-2">
-                       
+                        <div class="col-sm-4 col-md-4">
+                            @if($cursoActual == "OK")
+                            <form method="POST" action="/tomarAsistencia">
+                                {{csrf_field()}}
+                                <input type="hidden" name="idAlumno" value="{{$estudiante->idAlumno}}">
+                                <input type="hidden" name="idDetalleCurso" value="{{$curso->idDetalleCurso}}">
+                                <br>
+                                <div class="row justify-content-center">
+                                    <button type="submit"  style="margin-bottom:30px; margin-top:30px;width:200px;"  class="btn btn-round btn-success" style="background-color:greeen !important;">Tomar Asistencia</button>
+                                
+                                </div>
+                            </form>
+                            @endif
                         </div>
                         <div class="col-md-12 col-sm-12  text-center">
                             <h4><strong>Tareas del Curso</strong></h4>
@@ -79,7 +90,7 @@
                                                 </a>    
                                             </abbr>
                                             <abbr title="Entregar Tarea">
-                                                <a style="color:white;" class="btn btn-round btn-primary" data-toggle="modal" data-target="#insertUser">
+                                                <a style="color:white;" class="btn btn-round btn-success" data-toggle="modal" data-target="#insertUser">
                                                     <i class="fas fa-book-reader">
                                                     </i>
                                                 </a>

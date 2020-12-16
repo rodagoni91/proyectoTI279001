@@ -6,6 +6,8 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use Storage;
+use DateTime;
+use Maatwebsite\Excel\Facades\Excel;
 //Importacion de modelos
 use App\TipoUsuario;
 use App\User;
@@ -17,6 +19,7 @@ use App\Alumno;
 use App\Inscripcion;
 use App\Tareas;
 use App\Entregas;
+use App\Asistencia;
 class HomeController extends Controller
 {
     /**
@@ -863,6 +866,14 @@ class HomeController extends Controller
             return redirect('/home');
         }
     }
+    private function exportarXLS(Request $request){
+       
+        $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+        $userProfesor = User::find($profesor->idUsuario);
+        $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
+        
+        return Excel::download(new ProductsExport, 'products.xls');
+    }
     //Funciones de alumnos
     public function inscribirCurso(Request $request){
         if(Auth::user()->idTipoUsuario == 5){
@@ -1039,11 +1050,12 @@ class HomeController extends Controller
             ->first();     
             $horaCurso = $curso->Hora;
             $dias = $curso->Dias;
-            
+            $date = new DateTime($horaCurso);
+            $date = $date->format('H');
             $cursoActual = null;
             if($dias == "Diaria"){
                 if($diaActual >= 1 && $diaActual <= 5){
-                    if($horaActual >= $horaCurso && date('H') + 1 ){
+                    if($date == $horaActual){
                         $cursoActual = "OK";
                     }
                 }
@@ -1053,7 +1065,7 @@ class HomeController extends Controller
             }
             if($dias == "Terciada"){
                 if($diaActual == 1 || $diaActual == 3 || $diaActual == 5){
-                    if($horaActual >= $horaCurso && date('H') + 1 ){
+                    if($date == $horaActual){
                         $cursoActual = "OK";
                     }
                 }
@@ -1061,8 +1073,6 @@ class HomeController extends Controller
                     $cursoActual = null;
                 }
             }
-
-
             $estudiante = Alumno::where('idUsuario','=', Auth::user()->id)->first();
             $user = User::find($estudiante->idUsuario);
             $escuela = Escuela::where('idEscuela','=', $estudiante->idEscuela)->first();     
@@ -1074,7 +1084,23 @@ class HomeController extends Controller
             ->where('Tareas.Fecha','>=',$fechaActual)
             ->select('Curso.*','Tareas.*')
             ->get();
-            return view('detallesCursoAlumno')->with('profesor', $profesor)->with('escuela',$escuela)->with('curso',$curso)->with('tareas',$tareas)->with('fechaActual',$fechaActual);
+            return view('detallesCursoAlumno')->with('estudiante',$estudiante)->with('curso',$curso)->with('profesor', $profesor)->with('escuela',$escuela)->with('curso',$curso)->with('tareas',$tareas)->with('fechaActual',$fechaActual)->with('cursoActual',$cursoActual);
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+    public function tomarAsistencia(Request $request){
+        if(Auth::user()->idTipoUsuario == 5){
+            $asistencia = new Asistencia;
+            $asistencia->idAlumno = $request->idAlumno;
+            $asistencia->idDetalleCurso = $request->idDetalleCurso;
+            $asistencia->Fecha =  date('Y-n-j');
+            $asistencia->created_at = Carbon::now()->format('Y-m-d h:i:s');
+            $asistencia->save();
+            Session::flash('alert-class', 'alert-success');
+            Session::flash('mensaje', 'La Tarea se Entro Correctamente.');
+            return redirect('/detallesCurso/'.$asistencia->idDetalleCurso);
         }
         else{
             return redirect('/home');

@@ -25,7 +25,7 @@ class seederUsuario extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
 
-        DB::table('users')->insert([
+        /*DB::table('users')->insert([
             'idTipoUsuario'=> 1,
             'name' => 'Superusuario',
             'phone' => '5552221100',
@@ -77,6 +77,6 @@ class seederUsuario extends Seeder
                 'password'=>bcrypt('password'),
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
-        }
+        }*/
     }
 }

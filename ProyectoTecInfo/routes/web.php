@@ -9,6 +9,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Exports\ProductsExport;
+use Maatwebsite\Excel\Facades\Excel;
 Route::get('/', function () {
     //return view('welcome');
     return redirect('/login');
@@ -61,6 +63,10 @@ Route::get('/vistaActualizarTarea/{idTarea}','HomeController@vistaActualizarTare
 Route::get('/detallesTarea/{idTarea}','HomeController@detallesTarea')->name('detallesTarea');
 Route::post('/actualizarTarea','HomeController@actualizarTarea')->name('actualizarTarea');
 Route::post('/calificarTarea','HomeController@calificarTarea')->name('calificarTarea');
+//Exportar excel
+Route::get('/exportarXLS', function () {
+    return Excel::download(new ProductsExport, 'listaAsistencia.xls');
+});
 //Rutas de alumnos
 Route::post('/inscribirCurso','HomeController@inscribirCurso')->name('inscribirCurso');
 Route::get('/admiCursosEscuela','HomeController@admiCursosEscuela')->name('admiCursosEscuela');
@@ -69,3 +75,4 @@ Route::get('/misTareas','HomeController@misTareas')->name('misTareas');
 Route::post('/entregarTarea','HomeController@entregarTarea')->name('entregarTarea');
 Route::get('/detallesCurso/{idCurso}','HomeController@detallesCurso')->name('detallesCurso');
 Route::get('/detalleTarea/{idTarea}','HomeController@detalleTarea')->name('detalleTarea');
+Route::post('/tomarAsistencia','HomeController@tomarAsistencia')->name('tomarAsistencia');
