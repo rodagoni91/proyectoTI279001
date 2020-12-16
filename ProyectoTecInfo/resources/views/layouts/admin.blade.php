@@ -148,7 +148,12 @@
               <p>Mis Cursos</p>
             </a>
           </li>
-
+          <li class="nav-item ">
+            <a class="nav-link" href="/misTareas">
+            <i class="fas fa-book"></i>
+              <p>Mis Tareas</p>
+            </a>
+          </li>
 
 
           @endif

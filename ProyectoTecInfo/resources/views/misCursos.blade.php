@@ -74,7 +74,7 @@
                       <td>{{$curso->NombreProfesor}}</td>
 
                       <td class="text-center"> 
-                      <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detalleMiCurso/{{$curso->idCurso}}" ><i class="fas fa-eye"></i></a>
+                      <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detallesCurso/{{$curso->idDetalleCurso}}" ><i class="fas fa-eye"></i></a>
                       </td>
                     </tr>
                     @endforeach

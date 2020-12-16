@@ -61,8 +61,13 @@
                       </td>
 
                       <td class="text-center">
-                           <a class="btn btn-round btn-warning btn-icon btn-sm" href="/actualizarTarea/{{$tarea->idTarea}}" ><i class="fas fa-edit"></i></a>
-                            
+                        <a class="btn btn-round btn-warning btn-icon btn-sm" href="/vistaActualizarTarea/{{$tarea->idTarea}}" ><i class="fas fa-edit"></i></a>
+                        <abbr title="Detalle de Tarea">
+                          <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detallesTarea/{{$tarea->idTarea}}">
+                              <i class="fas fa-eye">
+                              </i>
+                          </a>    
+                        </abbr>
                       </td>
                     </tr>
                     @endforeach
@@ -85,7 +90,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Agregar Usuario</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Agregar Tarea</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
