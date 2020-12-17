@@ -7,8 +7,10 @@ use Session;
 use Carbon\Carbon;
 use Storage;
 use DateTime;
-use Maatwebsite\Excel\Facades\Excel;
 use Mail;
+//Excel
+use App\Exports\ProductsExport;
+use Maatwebsite\Excel\Facades\Excel;
 //Importacion de modelos
 use App\TipoUsuario;
 use App\User;
@@ -720,7 +722,8 @@ class HomeController extends Controller
             $curso = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
             ->select('DetalleCurso.*','Curso.*')
             ->where('DetalleCurso.idDetalleCurso','=',$idCurso)
-            ->first();            
+            ->first();  
+            //dd($curso);          
             $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
             $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
             $alumnos = Inscripcion::join('Alumno','Alumno.idAlumno','=','Inscripcion.idAlumno')
@@ -892,7 +895,7 @@ class HomeController extends Controller
             ->join('users','users.id','=','Alumno.idUsuario')
             ->select('users.name as NombreAlumno','Entregas.*')
             ->get();
-            
+            //dd($entregas);
             //$entregas = Entregas::where('idTarea','=',$tarea->idTarea)->get();
             return view('detallesTarea')->with('profesor',$profesor)->with('escuela',$escuela)->with('tarea',$tarea)->with('entregas',$entregas)->with('curso',$curso);
         }
@@ -927,6 +930,18 @@ class HomeController extends Controller
         $escuela = Escuela::where('idEscuela','=',$profesor->idEscuela)->first();
         
         return Excel::download(new ProductsExport, 'products.xls');
+    }
+    public function asistencia(Request $request){
+        if(Auth::user()->idTipoUsuario == 4){
+            $detalle = DetalleCurso::find($request->idDetalleCurso);
+            $curso = Curso::find($detalle->idCurso);
+            $fecha = date('Y-n-j');
+            $lista = 'listsAsistencia'.$fecha.$curso->NombreCurso.'.xls';
+            return Excel::download(new ProductsExport, $lista);
+        }
+        else{
+            return redirect('/home');
+        }
     }
     //Funciones de alumnos
     public function inscribirCurso(Request $request){
@@ -1072,13 +1087,13 @@ class HomeController extends Controller
             }
             else
             {
-                $nombreArchivo = "";
+                $nombreArch = "";
             }
 
             $entrega = new Entregas;
             $entrega->idTarea = $request->idTarea;
             $entrega->idAlumno = $estudiante->idAlumno;
-            $entrega->ArchivoTarea = $nombreArchivo;
+            $entrega->ArchivoTarea = $nombreArch;
             $entrega->Calificacion = "Sin Calificacion";
             $entrega->Observaciones = "Sin Observaciones";
             $entrega->created_at = Carbon::now()->format('Y-m-d h:i:s');

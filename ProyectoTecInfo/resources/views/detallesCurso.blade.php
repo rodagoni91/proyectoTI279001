@@ -33,7 +33,13 @@
                         </div>
                         <div class="col-sm-2 col-md-2"></div>
                         <div class="col-sm-2 col-md-2">
-                        <a style="color:white;" class="btn btn-round btn-primary" href="/exportarXLS">Descargar Lista de Asistencia</a>
+                          <div class="row justify-content-center" style="margin-top:-25px;">
+                            <form method="POST" action="/asistencia">
+                              {{csrf_field()}}
+                              <input type="hidden" name="idDetalleCurso" value="{{$curso->idDetalleCurso}}">
+                              <button type="submit"  style="margin-bottom:30px; margin-top:30px;width:200px;"  class="btn btn-round btn-primary" style="background-color:greeen !important;">Descargar Lista<br/> de Asistencia</button>
+                            </form>
+                          </div>
                         </div>
                         <div class="col-md-12 col-sm-12  text-center">
                             <h4><strong>Alumnos Inscritos</strong></h4>
@@ -48,14 +54,14 @@
                                 <th>Nombre del Alumno</th>
                                 <th>Correo del Alumno</th>
                                 <th>Inscrito el</th>
-                                <th class="disabled-sorting ">Acciones</th>
+                                
                             </tr>
                         </thead>
                         <tfoot>
                             <th>Nombre del Alumno</th>
                             <th>Correo del Alumno</th>
                             <th>Inscrito el</th>
-                            <th class="disabled-sorting ">Acciones</th>
+                            
                         </tfoot>
                         <tbody>
                             @foreach($alumnos as $alumno)
@@ -69,9 +75,7 @@
                                       echo $date->format('l d F Y');
                                   @endphp
                                 </td>
-                                <td class="text-center">
-                                <a class="btn btn-round btn-primary btn-icon btn-sm" href="/detalleAlumno/{{$alumno->idAlumno}}" ><i class="fas fa-eye"></i></a>
-                                   
+                               
                                 </td>
                             </tr>
                             @endforeach

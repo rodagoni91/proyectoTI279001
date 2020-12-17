@@ -64,9 +64,10 @@ Route::get('/detallesTarea/{idTarea}','HomeController@detallesTarea')->name('det
 Route::post('/actualizarTarea','HomeController@actualizarTarea')->name('actualizarTarea');
 Route::post('/calificarTarea','HomeController@calificarTarea')->name('calificarTarea');
 //Exportar excel
-Route::get('/exportarXLS', function () {
+/*Route::get('/exportarXLS', function () {
     return Excel::download(new ProductsExport, 'listaAsistencia.xls');
-});
+});*/
+Route::post('/asistencia','HomeController@asistencia')->name('asistencia');
 //Rutas de alumnos
 Route::post('/inscribirCurso','HomeController@inscribirCurso')->name('inscribirCurso');
 Route::get('/admiCursosEscuela','HomeController@admiCursosEscuela')->name('admiCursosEscuela');

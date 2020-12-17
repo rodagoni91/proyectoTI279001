@@ -75,7 +75,7 @@
                   @foreach($entregas as $entrega)
                     <tr>
                         <td>{{$entrega->NombreAlumno}}</td>
-                        <td><a href="{{$entrega->ArchivoTarea}}">Decargar Tarea</a></td>
+                        <td><a href="{{$entrega->ArchivoTarea}}" target="_blank">Decargar Tarea</a></td>
                         <td>
                             @php
                                 $date = Date::parse($entrega->created_at);
