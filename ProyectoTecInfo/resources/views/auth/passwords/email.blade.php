@@ -1,21 +1,23 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
+@section('content') 
+<style>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+</style>
+<div class="page-header header-filter" filter-color="orange"  style="background-image:url('{{ asset('imagen/login.jpg') }}'); background-size: cover;background-repeat: no-repeat;background-position: center;margin-top:-50px;">
+    <div class="page-header-image"></div> 
+    <div class="container" >
+    
+        <div class="row justify-content-center">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="card-body"  style='padding-top:20px'>
 
+                    <div class="card-header textBox">{{ __('Restablecer Contrasena') }}</div>
+
+                    <div class="card-body">
                     <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
+                    {{csrf_field()}}
 
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
@@ -33,15 +35,19 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary btn-round">
                                     {{ __('Send Password Reset Link') }}
                                 </button>
                             </div>
                         </div>
                     </form>
+                    </div>
+
                 </div>
             </div>
+            <div class="col-md-3"></div>
         </div>
+        
     </div>
 </div>
 @endsection

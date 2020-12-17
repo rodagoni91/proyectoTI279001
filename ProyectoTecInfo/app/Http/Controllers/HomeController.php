@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Storage;
 use DateTime;
 use Maatwebsite\Excel\Facades\Excel;
+use Mail;
 //Importacion de modelos
 use App\TipoUsuario;
 use App\User;
@@ -735,7 +736,8 @@ class HomeController extends Controller
     }
     public function crearTarea(Request $request){
         if(Auth::user()->idTipoUsuario == 4){
-            //dd($request);
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $profesor = User::find($profesor->idUsuario);
             $validator = Validator::make($request->all(), [
                 'fecha'=> 'required|string|max:255',
                 'hora' => 'required|string',
@@ -756,6 +758,58 @@ class HomeController extends Controller
             $tarea->DescripcionTarea = $request->descripcion;
             $tarea->created_at = Carbon::now()->format('Y-m-d h:i:s');
             $tarea->save();
+            $inscripcion = Inscripcion::join('Alumno','Alumno.idAlumno','=','Inscripcion.idAlumno')
+            ->join('users','users.id','=','Alumno.idUsuario')
+            ->join('DetalleCurso','DetalleCurso.idDetalleCurso','=','Inscripcion.idDetalleInscripcion')
+            ->join('Curso','Curso.idCurso','=','DetalleCurso.idCurso')
+            ->select('users.*','Curso.*')
+            ->where('Inscripcion.idDetalleInscripcion','=',$tarea->idDetalleCurso)
+            ->get();
+
+            $profesor = Profesor::where('idUsuario','=',Auth::user()->id)->first();
+            $profesor = User::find($profesor->idUsuario);
+            $curso = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
+            ->select('Curso.*')->where('DetalleCurso.idDetalleCurso','=', $tarea->idDetalleCurso)->first();
+            $nombreProfe = $profesor->name;
+            $nombre = $profesor->name;
+            $email =  $profesor->email;
+            
+           
+            foreach($inscripcion as $alumno){
+               $email = $alumno->email;
+               $nombre = $alumno->name;
+               $mensaje = "El profesor ".$profesor->name." a encargado una nueva tarea de la materia ".$curso->NombreCurso."\nTarea: ".$tarea->DescripcionTarea."\nFecha limite de entrega: ".$tarea->Fecha." a las ".$tarea->Hora;
+               $data = array(
+                    'nombre' => $nombre,
+                    'email' => $email,
+                    'mensaje' => $mensaje,
+                );
+
+               if (isset($email)) {
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        Mail::send('contacto', $data, function ($message) use ($email, $nombre) {
+                            $message->from('noreply@shool.com', 'Nueva Tarea');
+                            $message->to($email, $nombre)->subject('Nueva Tarea');
+                        
+                        });
+                    }
+                }
+            }
+
+            
+            /*if (isset($email)) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                Mail::send('contacto', $data, function ($message) use ($email, $nombre) {
+                    $message->from($email, $nombre);
+                    $message->to('abel.rangel@gruporanmat.com','Abel Rangel')->subject('Contacto Pagina Web');
+                    //$message->to('abel.rangel@gruporanmat.com','Abel Rangel')->subject('Contacto Pagina Web');
+                });
+            }
+            }*/
+
+            
+
+
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Tarea Creada Correctamente.');
             return redirect('/admiTareas');
@@ -1029,6 +1083,35 @@ class HomeController extends Controller
             $entrega->Observaciones = "Sin Observaciones";
             $entrega->created_at = Carbon::now()->format('Y-m-d h:i:s');
             $entrega->save();
+            $tarea = Tareas::find($entrega->idTarea);
+            $profesor = Profesor::join('users','users.id','=','Profesor.idUsuario')
+            ->join('DetalleCurso','DetalleCurso.idProfesor','=','Profesor.idProfesor')
+            ->select('users.*')
+            ->where('DetalleCurso.idDetalleCurso','=',$tarea->idDetalleCurso)->first();
+            $emailAlumno = $user->email;
+            $nombre = $user->name;
+            $email = $user->email;
+            $mensaje = "El alumno ".$user->name." ha entregado la tarea ".$tarea->TituloTarea;
+
+            $data = array(
+                'nombre' => $nombre,
+                'email' => $email,
+                'mensaje' => $mensaje,
+            );
+
+            if (isset($email)) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    Mail::send('contacto', $data, function ($message) use ($email, $nombre, $emailAlumno) {
+                                
+                        $message->from('noreply@shool.com', 'Entrega de Tarea');
+                        $message->to($email, $nombre)->cc($emailAlumno, $nombre)->subject('Entrega de Tarea');
+                       
+                    });
+                }
+            }
+    
+    
+
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'La Tarea se Entro Correctamente.');
             return redirect('/misTareas');

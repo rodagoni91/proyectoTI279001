@@ -3,7 +3,7 @@
 <div class="container" style="margin-top:50px;">
     <ol class="breadcrumb" style="z-index: 999;margin-top:60px;">
         <li class="breadcrumb-item"><a href="/home">Panel</a></li>
-        <li class="breadcrumb-item"><a href="/misTareas">Mis Tareas</a></li>
+        <li class="breadcrumb-item"><a href="/admiTareas">Mis Tareas</a></li>
         <li class="breadcrumb-item active">Detalles de {{$tarea->TituloTarea}}</li>  
     </ol>
 </div>
