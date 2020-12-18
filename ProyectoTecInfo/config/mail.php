@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'driver' => env('MAIL_DRIVER', 'mail'),
+    'driver' => env('MAIL_DRIVER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,6 +44,7 @@ return [
 
     'port' => env('MAIL_PORT', 587),
 
+
     /*
     |--------------------------------------------------------------------------
     | Global "From" Address
@@ -56,8 +57,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@guimea.com'),
-        'name' => env('MAIL_FROM_NAME', 'Sofia Moda'),
+        'address' => env('MAIL_FROM_ADDRESS', 'rodagono@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'ShoolAssistent'),
     ],
 
     /*

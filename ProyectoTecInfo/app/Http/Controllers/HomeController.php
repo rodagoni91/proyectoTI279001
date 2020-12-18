@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Storage;
 use DateTime;
 use Mail;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 //Excel
 use App\Exports\ProductsExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -774,45 +777,48 @@ class HomeController extends Controller
             $curso = Curso::join('DetalleCurso','DetalleCurso.idCurso','=','Curso.idCurso')
             ->select('Curso.*')->where('DetalleCurso.idDetalleCurso','=', $tarea->idDetalleCurso)->first();
             $nombreProfe = $profesor->name;
-            $nombre = $profesor->name;
-            $email =  $profesor->email;
+            $emailProfe =  $profesor->email;
             
-           
             foreach($inscripcion as $alumno){
-               $email = $alumno->email;
-               $nombre = $alumno->name;
-               $mensaje = "El profesor ".$profesor->name." a encargado una nueva tarea de la materia ".$curso->NombreCurso."\nTarea: ".$tarea->DescripcionTarea."\nFecha limite de entrega: ".$tarea->Fecha." a las ".$tarea->Hora;
-               $data = array(
-                    'nombre' => $nombre,
-                    'email' => $email,
-                    'mensaje' => $mensaje,
+                $mail = new PHPMailer(true);
+               
+
+                $mail->isSMTP(); 
+                //$mail->SMTPDebug = 1;                                           // Send using SMTP
+                $mail->Host = 'smtp.gmail.com';                  // Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username = 'rodagono@gmail.com';
+                $mail->Password = 'uwiihsyixtrdilax';
+                $mail->SMTPSecure = 'tls';      // Enable TLS encryption; PHPMailer::ENCRYPTION_SMTPS also accepted
+                $mail->Port       = 587;   
+                $mail->IsHTML(true);  
+                $mail->SMTPOptions = array(
+                    'ssl' => array(
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    )
                 );
+                //Recipients
+                $mail->SetFrom('noreply@shool.com', 'No reply');
+                $mail->addAddress($alumno->email, 'SHOOL ASSISTENT');     // Add a recipient         // Name is optional
+                $mail->addReplyTo('noreply@shool.com', 'No reply'); // TCP port to connect to
 
-               if (isset($email)) {
-                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        Mail::send('contacto', $data, function ($message) use ($email, $nombre) {
-                            $message->from('noreply@shool.com', 'Nueva Tarea');
-                            $message->to($email, $nombre)->subject('Nueva Tarea');
-                        
-                        });
-                    }
-                }
+                $mail->isHTML(true);                                  // Set email format to HTML
+                $mail->Subject = $nombreProfe;
+                $mail->Body    = "<p>Una nueva tarea ha sido su encargada.</p>
+                
+                <p>La informacion de la tarea es la siguiente:</p>
+                <p>Titulo de la Tarea: ".$tarea->TituloTarea."</p>
+                <p>Materia: ".$curso->NombreCurso."</p>
+                <p>Descripcion: " .$tarea->DescripcionTarea . "</p>
+                <p>Fecha limite: " .$tarea->Fecha. " a las: ".$tarea->Hora."</p>
+                ";
+                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+                $mail->send();
             }
 
-            
-            /*if (isset($email)) {
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                Mail::send('contacto', $data, function ($message) use ($email, $nombre) {
-                    $message->from($email, $nombre);
-                    $message->to('abel.rangel@gruporanmat.com','Abel Rangel')->subject('Contacto Pagina Web');
-                    //$message->to('abel.rangel@gruporanmat.com','Abel Rangel')->subject('Contacto Pagina Web');
-                });
-            }
-            }*/
-
-            
-
-
+        
             Session::flash('alert-class', 'alert-success');
             Session::flash('mensaje', 'Tarea Creada Correctamente.');
             return redirect('/admiTareas');
@@ -1104,31 +1110,75 @@ class HomeController extends Controller
             ->select('users.*')
             ->where('DetalleCurso.idDetalleCurso','=',$tarea->idDetalleCurso)->first();
             $emailAlumno = $user->email;
-            $nombre = $user->name;
-            $email = $user->email;
-            $mensaje = "El alumno ".$user->name." ha entregado la tarea ".$tarea->TituloTarea;
+            $nombreProfesor  = $profesor->name;
+            $emailProfesor = $profesor->email;
+            
 
-            $data = array(
-                'nombre' => $nombre,
-                'email' => $email,
-                'mensaje' => $mensaje,
+            $mail = new PHPMailer(true);   
+            $mail->isSMTP(); 
+            //$mail->SMTPDebug = 1;                                           // Send using SMTP
+            $mail->Host = 'smtp.gmail.com';                  // Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+            $mail->Username = 'rodagono@gmail.com';
+            $mail->Password = 'uwiihsyixtrdilax';
+            $mail->SMTPSecure = 'tls';      // Enable TLS encryption; PHPMailer::ENCRYPTION_SMTPS also accepted
+            $mail->Port       = 587;   
+            $mail->IsHTML(true);  
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
             );
+            //Recipients
+            $mail->SetFrom('noreply@shool.com', 'No reply');
+            $mail->addAddress($emailProfesor, 'SHOOL ASSISTENT');     // Add a recipient         // Name is optional
+            $mail->addReplyTo($emailAlumno, 'No reply'); // TCP port to connect to
+            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->Subject = "Shool Assitent";
+            $mail->Body    = "<p>Un Alumno ha entregado una tarea.</p>
+            
+            <p>El alumno: ".$user->name."ha entregado la tarea ".$tarea->TituloTarea." en tiempo y forma.</p>
+            ";
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+            $mail->send();
 
-            if (isset($email)) {
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    Mail::send('contacto', $data, function ($message) use ($email, $nombre, $emailAlumno) {
-                                
-                        $message->from('noreply@shool.com', 'Entrega de Tarea');
-                        $message->to($email, $nombre)->cc($emailAlumno, $nombre)->subject('Entrega de Tarea');
-                       
-                    });
-                }
-            }
+
+            $mail = new PHPMailer(true);   
+            $mail->isSMTP(); 
+            //$mail->SMTPDebug = 1;                                           // Send using SMTP
+            $mail->Host = 'smtp.gmail.com';                  // Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+            $mail->Username = 'rodagono@gmail.com';
+            $mail->Password = 'uwiihsyixtrdilax';
+            $mail->SMTPSecure = 'tls';      // Enable TLS encryption; PHPMailer::ENCRYPTION_SMTPS also accepted
+            $mail->Port       = 587;   
+            $mail->IsHTML(true);  
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+            //Recipients
+            $mail->SetFrom('noreply@shool.com', 'No reply');
+            $mail->addAddress($emailAlumno, 'SHOOL ASSISTENT');     // Add a recipient         // Name is optional
+            $mail->addReplyTo($emailAlumno, 'No reply'); // TCP port to connect to
+            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->Subject = "Shool Assitent";
+            $mail->Body    = "<p>Tarea Entregada.</p>
+            
+            <p>Su tarea ".$tarea->TituloTarea." ha sido entregada en tiempo y forma.</p>
+            ";
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+            $mail->send();
     
     
 
             Session::flash('alert-class', 'alert-success');
-            Session::flash('mensaje', 'La Tarea se Entro Correctamente.');
+            Session::flash('mensaje', 'La Tarea se Entrogo Correctamente.');
             return redirect('/misTareas');
         }
         else{
